@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <View
+        android:id="@+id/item_daily_top_line"
+        android:layout_width="@dimen/dp_1"
+        android:layout_height="@dimen/dp_20"
+        android:layout_centerHorizontal="true"
+        android:background="@color/colorPure" />
+
+    <ImageView
+        android:id="@+id/iv_item_daily"
+        android:layout_width="@dimen/dp_8"
+        android:layout_height="@dimen/dp_8"
+        android:layout_below="@id/item_daily_top_line"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/shape_date_circle" />
+
+    <View
+        android:id="@+id/item_daily_bottom_line"
+        android:layout_width="@dimen/dp_1"
+        android:layout_height="@dimen/dp_20"
+        android:layout_below="@id/iv_item_daily"
+        android:layout_centerHorizontal="true"
+        android:background="@color/colorPure" />
+
+    <TextView
+        android:id="@+id/tv_item_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="@dimen/dp_24"
+        android:textSize="@dimen/sp_12"
+        android:layout_toStartOf="@id/iv_item_daily"
+        android:text="2019年5月15日"
+        android:textColor="@color/colorAccent" />
+
+    <TextView
+        android:id="@+id/tv_item_daily_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/sp_12"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="@dimen/dp_24"
+        android:layout_toEndOf="@id/iv_item_daily"
+        android:text="198"
+        android:textColor="@color/colorAccent" />
+</RelativeLayout>

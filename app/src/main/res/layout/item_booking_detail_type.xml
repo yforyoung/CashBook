@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/dp_10"
+    android:background="@drawable/ripple_type"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="@dimen/dp_5">
+
+    <ImageView
+        android:id="@+id/iv_type_icon"
+        android:layout_width="@dimen/dp_30"
+        android:layout_height="@dimen/dp_30"
+        android:background="@drawable/pic_food" />
+
+    <TextView
+        android:id="@+id/tv_type_text"
+        android:layout_width="38dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorPrimaryDark"
+        android:layout_marginTop="@dimen/dp_4"
+        android:gravity="center"
+        android:text="餐饮" />
+</LinearLayout>

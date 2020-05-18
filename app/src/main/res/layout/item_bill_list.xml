@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <View
+        android:id="@+id/item_bill_top_line"
+        android:layout_width="@dimen/dp_1"
+        android:layout_height="@dimen/dp_16"
+        android:layout_centerHorizontal="true"
+        android:background="@color/colorPure" />
+
+    <ImageView
+        android:id="@+id/iv_item_bill"
+        android:layout_width="@dimen/dp_24"
+        android:layout_height="@dimen/dp_24"
+        android:layout_below="@id/item_bill_top_line"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/pic_food" />
+
+    <View
+        android:id="@+id/item_bill_bottom_line"
+        android:layout_width="@dimen/dp_1"
+        android:layout_height="@dimen/dp_22"
+        android:layout_below="@id/iv_item_bill"
+        android:layout_centerHorizontal="true"
+        android:background="@color/colorPure" />
+
+    <TextView
+        android:id="@+id/tv_item_bill_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="@dimen/dp_24"
+        android:layout_toStartOf="@id/iv_item_bill"
+        android:text="餐饮"
+        android:textColor="@color/colorPrimary" />
+
+    <TextView
+        android:id="@+id/tv_item_bill_detail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_item_bill_count"
+        android:layout_alignStart="@id/tv_item_bill_count"
+        android:layout_marginTop="@dimen/dp_20"
+        android:layout_marginEnd="@dimen/dp_8"
+        android:text="agsgag"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:textColor="@color/colorPrimary"
+        android:textSize="@dimen/sp_8" />
+
+    <TextView
+        android:id="@+id/tv_item_bill_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="@dimen/dp_24"
+        android:layout_toEndOf="@id/iv_item_bill"
+        android:text="18"
+        android:textColor="@color/colorPrimary" />
+</RelativeLayout>

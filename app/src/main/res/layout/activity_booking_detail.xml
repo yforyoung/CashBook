@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground"
+    android:fitsSystemWindows="true"
+    tools:context=".activity.BookingDetailActivity">
+
+    <RelativeLayout
+        android:id="@+id/rl_booking_detail_title"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_55"
+        android:background="@drawable/shape_action_bar"
+        android:elevation="@dimen/dp_2">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true">
+
+            <ImageView
+                android:id="@+id/iv_booking_back"
+                android:layout_width="@dimen/dp_24"
+                android:layout_height="@dimen/dp_24"
+                android:layout_margin="@dimen/dp_10"
+                android:background="@drawable/ic_back" />
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:letterSpacing="0.1"
+            android:text="@string/string_add"
+            android:textColor="@color/colorCover"
+            android:textSize="@dimen/sp_14"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_booking_detail_price"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_60"
+        android:layout_below="@id/rl_booking_detail_title"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_booking_detail_type_name"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:paddingStart="@dimen/dp_10"
+            android:paddingEnd="@dimen/dp_10"
+            android:text="餐饮"
+            android:textColor="@color/colorPrimary"
+            android:textSize="@dimen/sp_20" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_booking_detail_equation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical|end"
+                android:paddingTop="@dimen/dp_2"
+                android:paddingEnd="@dimen/dp_20"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/sp_10" />
+
+            <TextView
+                android:id="@+id/tv_booking_detail_count"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical|end"
+                android:hint="0.00"
+                android:inputType="numberDecimal"
+                android:maxLines="1"
+                android:paddingStart="@dimen/dp_10"
+                android:paddingEnd="@dimen/dp_20"
+                android:textColor="@color/colorPrimary"
+                android:textColorHint="@color/colorPure"
+                android:textSize="@dimen/sp_20" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_1"
+        android:layout_above="@id/rv_booking_type"
+        android:background="@color/colorPrimary" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_booking_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ll_booking_detail_price" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_30"
+        android:layout_above="@id/layout_cacul">
+
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/spinner_detail_type"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:visibility="gone"
+            android:background="@color/colorBackground"
+            android:entries="@array/array_type" />
+
+        <TextView
+            android:id="@+id/tv_date"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@color/colorBackground"
+            android:gravity="center"
+            android:paddingStart="@dimen/dp_4"
+            android:textColor="@color/colorPrimary"
+            android:paddingEnd="@dimen/dp_4"
+            android:textSize="10sp" />
+
+        <EditText
+            android:id="@+id/et_remarks"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/colorBackground"
+            android:ellipsize="end"
+            android:hint="备注"
+            android:paddingStart="@dimen/dp_20"
+            android:paddingEnd="@dimen/dp_20"
+            android:textColorHint="@color/colorPrimary"
+            android:singleLine="true"
+            android:textColor="@color/colorPrimary"
+            android:textSize="@dimen/sp_10" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_1"
+        android:layout_above="@id/layout_cacul"
+        android:background="@color/colorPure" />
+
+    <include
+        android:id="@+id/layout_cacul"
+        layout="@layout/layout_cacul"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_250"
+        android:layout_alignParentBottom="true" />
+
+</RelativeLayout>
