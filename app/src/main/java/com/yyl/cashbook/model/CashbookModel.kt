@@ -9,7 +9,6 @@ import com.yyl.cashbook.utils.getDateIntByDate
 import com.yyl.cashbook.utils.getTodayString
 import com.yyl.cashbook.utils.log
 import org.litepal.LitePal
-import org.litepal.extension.findAll
 import org.litepal.extension.sum
 import java.util.*
 
@@ -29,7 +28,6 @@ class CashbookModel {
         return merge(billList, dailyBillList)
     }
 
-    //TODO 合并后的billList需要倒叙
     private fun merge(billList: List<Bill>, dailyBillList: List<DailyBill>): List<Cashbook> {
         val list = arrayListOf<Cashbook>()
         val p = billList.size
@@ -79,6 +77,10 @@ class CashbookModel {
 
     fun addCashbook(b: Bill) {
         b.save()
+    }
+
+    fun deleteCashbook(b:Bill){
+        b.delete()
     }
 
     fun updateCashbook(b: Bill) {

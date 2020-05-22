@@ -44,9 +44,9 @@
         android:layout_alignStart="@id/tv_item_bill_count"
         android:layout_marginTop="@dimen/dp_20"
         android:layout_marginEnd="@dimen/dp_8"
-        android:text="agsgag"
-        android:maxLines="2"
         android:ellipsize="end"
+        android:maxLines="2"
+        android:text="agsgag"
         android:textColor="@color/colorPrimary"
         android:textSize="@dimen/sp_8" />
 
@@ -59,4 +59,14 @@
         android:layout_toEndOf="@id/iv_item_bill"
         android:text="18"
         android:textColor="@color/colorPrimary" />
+
+    <ImageView
+        android:id="@+id/iv_item_bill_delete"
+        android:layout_width="@dimen/dp_20"
+        android:layout_height="@dimen/dp_20"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="@dimen/dp_20"
+        android:background="@drawable/ic_delete"
+        android:visibility="gone" />
 </RelativeLayout>

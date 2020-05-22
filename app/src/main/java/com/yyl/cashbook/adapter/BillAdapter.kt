@@ -3,6 +3,8 @@ package com.yyl.cashbook.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.TranslateAnimation
 import androidx.recyclerview.widget.RecyclerView
 import com.yyl.cashbook.R
 import com.yyl.cashbook.`interface`.OnItemClickListener
@@ -17,15 +19,20 @@ class BillAdapter(private val list: List<Cashbook>) :
     RecyclerView.Adapter<BillAdapter.ViewHolder>() {
 
     var onItemClickListener: OnItemClickListener? = null
+    var deleteShowingPosition = -1
+    var handlerAnotherView: HandlerAnotherView? = null
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view: View = if (viewType == TYPE_BILL) {
-            LayoutInflater.from(parent.context).inflate(R.layout.item_bill_list, parent, false)
+        val view: View
+        if (viewType == TYPE_BILL) {
+            view = LayoutInflater.from(parent.context)
+                .inflate(R.layout.item_bill_list, parent, false)
         } else {
-            LayoutInflater.from(parent.context)
+            view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.item_daily_count, parent, false)
+
         }
         return ViewHolder(view)
     }
@@ -53,6 +60,60 @@ class BillAdapter(private val list: List<Cashbook>) :
                 )
                 tv_item_bill_count.text = bill.count.toString()
                 tv_item_bill_detail.text = bill.detail
+
+                /************点击事件***************/
+                //点击图标切换删除按钮
+                iv_item_bill.tag = position
+                iv_item_bill.setOnClickListener {
+                    if (iv_item_bill_delete.visibility != View.VISIBLE) {
+                        val taShow = TranslateAnimation(
+                            right.toFloat(),
+                            0f,
+                            iv_item_bill_delete.translationY,
+                            iv_item_bill_delete.translationY
+                        )
+                        taShow.duration = 500
+                        iv_item_bill_delete.visibility = View.VISIBLE
+                        if (deleteShowingPosition != -1 && deleteShowingPosition != position) {
+                            handlerAnotherView!!.handleAnother(deleteShowingPosition)
+                        }
+                        deleteShowingPosition = position
+                        iv_item_bill_delete.startAnimation(taShow)
+                    } else {
+                        val taDismiss = TranslateAnimation(
+                            0f,
+                            right.toFloat(),
+                            iv_item_bill_delete.translationY,
+                            iv_item_bill_delete.translationY
+                        )
+                        taDismiss.duration = 500
+                        taDismiss.setAnimationListener(object : Animation.AnimationListener {
+                            override fun onAnimationRepeat(animation: Animation?) {
+                            }
+
+                            override fun onAnimationEnd(animation: Animation?) {
+                                iv_item_bill_delete.visibility = View.GONE
+                                if (deleteShowingPosition == position) {
+                                    deleteShowingPosition = -1
+                                }
+                                iv_item_bill_delete.translationX = 0f
+                            }
+
+                            override fun onAnimationStart(animation: Animation?) {
+                            }
+
+                        })
+                        iv_item_bill_delete.startAnimation(taDismiss)
+                    }
+                }
+
+                iv_item_bill_delete.tag = position
+                iv_item_bill_delete.setOnClickListener {
+                    onItemClickListener!!.onItemClick(
+                        iv_item_bill_delete,
+                        iv_item_bill_delete.tag as Int
+                    )
+                }
             }
         } else {
             with(holder.itemView) {
@@ -62,5 +123,9 @@ class BillAdapter(private val list: List<Cashbook>) :
                 tv_item_daily_count.text = dailyBill.dayCount.toString()
             }
         }
+    }
+
+    interface HandlerAnotherView {
+        fun handleAnother(position: Int)
     }
 }
