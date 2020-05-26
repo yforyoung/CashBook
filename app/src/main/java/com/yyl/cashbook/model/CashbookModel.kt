@@ -10,6 +10,7 @@ import com.yyl.cashbook.utils.getTodayString
 import com.yyl.cashbook.utils.log
 import org.litepal.LitePal
 import org.litepal.extension.sum
+import java.text.DecimalFormat
 import java.util.*
 
 class CashbookModel {
@@ -59,7 +60,7 @@ class CashbookModel {
         val count = LitePal
             .where("date = ?", getTodayString())
             .sum<Bill, Double>("count")
-        return count.toString()
+        return DecimalFormat("0.00").format(count).toString()
     }
 
     fun getMonthCount(): String {
@@ -72,14 +73,14 @@ class CashbookModel {
                 getTodayString()
             )
             .sum<Bill, Double>("count")
-        return count.toString()
+        return DecimalFormat("0.00").format(count).toString()
     }
 
     fun addCashbook(b: Bill) {
         b.save()
     }
 
-    fun deleteCashbook(b:Bill){
+    fun deleteCashbook(b: Bill) {
         b.delete()
     }
 
