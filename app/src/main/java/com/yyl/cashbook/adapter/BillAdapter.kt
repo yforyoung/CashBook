@@ -25,12 +25,11 @@ class BillAdapter(private val list: List<Cashbook>) :
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view: View
-        if (viewType == TYPE_BILL) {
-            view = LayoutInflater.from(parent.context)
+        val view: View = if (viewType == TYPE_BILL) {
+            LayoutInflater.from(parent.context)
                 .inflate(R.layout.item_bill_list, parent, false)
         } else {
-            view = LayoutInflater.from(parent.context)
+            LayoutInflater.from(parent.context)
                 .inflate(R.layout.item_daily_count, parent, false)
 
         }
@@ -60,6 +59,9 @@ class BillAdapter(private val list: List<Cashbook>) :
                 )
                 tv_item_bill_count.text = bill.count.toString()
                 tv_item_bill_detail.text = bill.detail
+                if (position != deleteShowingPosition) {
+                    iv_item_bill_delete.visibility = View.GONE;
+                }
 
                 /************点击事件***************/
                 //点击图标切换删除按钮
