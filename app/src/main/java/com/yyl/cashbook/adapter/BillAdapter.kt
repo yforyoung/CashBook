@@ -5,6 +5,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.TranslateAnimation
+import androidx.core.view.ViewCompat
+import androidx.core.view.ViewPropertyAnimatorListener
 import androidx.recyclerview.widget.RecyclerView
 import com.yyl.cashbook.R
 import com.yyl.cashbook.`interface`.OnItemClickListener
@@ -12,11 +14,12 @@ import com.yyl.cashbook.database.Bill
 import com.yyl.cashbook.database.DailyBill
 import com.yyl.cashbook.model.beans.*
 import com.yyl.cashbook.utils.getDateStringByInt
+import jp.wasabeef.recyclerview.animators.holder.AnimateViewHolder
 import kotlinx.android.synthetic.main.item_bill_list.view.*
 import kotlinx.android.synthetic.main.item_daily_count.view.*
 
 class BillAdapter(private val list: List<Cashbook>) :
-    RecyclerView.Adapter<BillAdapter.ViewHolder>() {
+    RecyclerView.Adapter<BillAdapter.ViewHolder>(), AnimateViewHolder {
 
     var onItemClickListener: OnItemClickListener? = null
     var deleteShowingPosition = -1
@@ -129,5 +132,32 @@ class BillAdapter(private val list: List<Cashbook>) :
 
     interface HandlerAnotherView {
         fun handleAnother(position: Int)
+    }
+
+    override fun preAnimateAddImpl(p0: RecyclerView.ViewHolder?) {
+        ViewCompat.setTranslationY(p0!!.itemView, -p0.itemView.height * 0.3f);
+        ViewCompat.setAlpha(p0.itemView, 0f);
+    }
+
+    override fun preAnimateRemoveImpl(p0: RecyclerView.ViewHolder?) {
+        ViewCompat.animate(p0!!.itemView)
+            .translationY(-p0.itemView.height * 0.3f)
+            .alpha(1f)
+            .setDuration(300)
+            .start()
+    }
+
+    override fun animateAddImpl(p0: RecyclerView.ViewHolder?, p1: ViewPropertyAnimatorListener?) {
+        ViewCompat.animate(p0!!.itemView)
+            .translationY(0f)
+            .alpha(1f)
+            .setDuration(300)
+            .start()
+    }
+
+    override fun animateRemoveImpl(
+        p0: RecyclerView.ViewHolder?,
+        p1: ViewPropertyAnimatorListener?
+    ) {
     }
 }

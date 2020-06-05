@@ -21,7 +21,6 @@
             android:id="@+id/tv_day_out"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="720.00"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="@dimen/sp_20" />
 
@@ -46,7 +45,6 @@
             android:id="@+id/tv_month_out"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="720.00"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="@dimen/sp_20" />
     </LinearLayout>

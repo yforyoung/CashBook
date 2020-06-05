@@ -16,9 +16,16 @@ import com.yyl.cashbook.adapter.BillAdapter
 import com.yyl.cashbook.database.Bill
 import com.yyl.cashbook.model.CashbookModel
 import com.yyl.cashbook.model.beans.Cashbook
+import com.yyl.cashbook.utils.IO
+import com.yyl.cashbook.utils.Main
 import com.yyl.cashbook.utils.jump2Activity
+import com.yyl.cashbook.utils.log
+import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator
 import kotlinx.android.synthetic.main.fragment_booking.*
-import java.security.MessageDigest
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class BookingFragment : Fragment() {
     private lateinit var adapter: BillAdapter
@@ -57,7 +64,7 @@ class BookingFragment : Fragment() {
         }
         recycler_view.layoutManager = LinearLayoutManager(activity!!, RecyclerView.VERTICAL, false)
         recycler_view.adapter = adapter
-
+        recycler_view.itemAnimator=SlideInLeftAnimator()
         initListener()
     }
 
@@ -76,10 +83,19 @@ class BookingFragment : Fragment() {
     }
 
     private fun refreshCashData() {
-        tv_day_out.text = cashbookModel.getTodayCount()
-        tv_month_out.text = cashbookModel.getMonthCount()
-        list.clear()
-        list.addAll(cashbookModel.getCashbookList()!!)
-        adapter.notifyDataSetChanged()
+        GlobalScope.launch(IO) {
+            val todayCount=cashbookModel.getTodayCount()
+            val monthCount=cashbookModel.getMonthCount()
+            list.clear()
+            list.addAll(cashbookModel.getCashbookList()!!)
+            withContext(Main){
+                tv_day_out.text = todayCount
+                tv_month_out.text = monthCount
+                adapter.notifyItemRangeChanged(0,list.size-1)
+            }
+        }
+//        tv_day_out.text = cashbookModel.getTodayCount()
+//        tv_month_out.text = cashbookModel.getMonthCount()
+//        adapter.notifyDataSetChanged()
     }
 }

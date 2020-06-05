@@ -3,12 +3,16 @@ package com.yyl.cashbook.utils
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import kotlinx.coroutines.Dispatchers
 import java.text.SimpleDateFormat
 import java.util.*
 
 /**
  * 2020-01-01
  */
+val Main = Dispatchers.Main
+val IO = Dispatchers.IO
+
 fun getDateStringByInt(i: Int): String {
     val date = SimpleDateFormat("yyyyMMdd").parse(i.toString())
     val today = Date()

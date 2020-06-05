@@ -8,6 +8,9 @@ import com.yyl.cashbook.model.beans.TYPE_DAILY_COUNT
 import com.yyl.cashbook.utils.getDateIntByDate
 import com.yyl.cashbook.utils.getTodayString
 import com.yyl.cashbook.utils.log
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.litepal.LitePal
 import org.litepal.extension.sum
 import java.text.DecimalFormat
@@ -28,6 +31,27 @@ class CashbookModel {
 
         return merge(billList, dailyBillList)
     }
+
+    fun getCashbookList(page: Int): List<Cashbook>? {
+        val billList = LitePal
+            .limit(10)
+            .offset(page)
+            .order("date desc, id desc")
+            .find(Bill::class.java)
+
+        val dailyBillList = arrayListOf<DailyBill>()
+        val cursor =
+            LitePal.findBySQL("select date,sum(count) from Bill group by date order by date desc, id desc")
+        while (cursor.moveToNext()) {
+            val dailyBill = DailyBill()
+            dailyBill.dayCount = cursor.getDouble(1)
+            dailyBill.date = cursor.getInt(0)
+            dailyBillList.add(dailyBill)
+        }
+
+        return merge(billList, dailyBillList)
+    }
+
 
     private fun merge(billList: List<Bill>, dailyBillList: List<DailyBill>): List<Cashbook> {
         val list = arrayListOf<Cashbook>()
