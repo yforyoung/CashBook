@@ -15,6 +15,7 @@ import org.litepal.LitePal
 import org.litepal.extension.sum
 import java.text.DecimalFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 class CashbookModel {
     fun getCashbookList(): List<Cashbook>? {
@@ -35,7 +36,7 @@ class CashbookModel {
     fun getCashbookList(page: Int): List<Cashbook>? {
         val billList = LitePal
             .limit(10)
-            .offset(page)
+            .offset(page * 10)
             .order("date desc, id desc")
             .find(Bill::class.java)
 
@@ -48,7 +49,6 @@ class CashbookModel {
             dailyBill.date = cursor.getInt(0)
             dailyBillList.add(dailyBill)
         }
-
         return merge(billList, dailyBillList)
     }
 
@@ -110,5 +110,44 @@ class CashbookModel {
 
     fun updateCashbook(b: Bill) {
         b.save()
+    }
+
+    fun findPosition(b: Bill, list: ArrayList<Cashbook>): Int {
+        val dateList = arrayListOf<Int>()
+        for (c in list) {
+            if (c.item is DailyBill) {
+                dateList.add((c.item as DailyBill).date)
+            } else if (c.item is Bill) {
+                dateList.add((c.item as Bill).date)
+            }
+        }
+        return binarySearch(b.date, dateList)
+    }
+
+    /*1 1 1 2 2 2 2 3 3 4 4 5 5 8 8 9 9*/
+    /*2--5*/
+    /*7--13*/
+    fun binarySearch(key: Int, list: ArrayList<Int>): Int {
+        var position = list.size / 2
+        var midData = list[position]
+        while (true) {
+            if (midData == key) {
+                //向前找 找到第一个等于key的位置
+                if (position == 0 || position == 1) {
+                    return 1
+                }
+                while (position > 1) {
+                    if (list[position - 1] < key) { //前一个值<key position就是第一个 ，因此返回position+1
+                        return position + 1
+                    } else if (list[position - 1] == key) { //前一个值=key  继续向前找
+                        position--
+                    }
+                }
+            } else if (midData > key) {
+                position /= 2
+            } else {
+                position = (list.size - position) / 2
+            }
+        }
     }
 }

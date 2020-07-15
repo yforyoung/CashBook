@@ -3,6 +3,7 @@ package com.yyl.cashbook.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.view.animation.TranslateAnimation
 import androidx.core.view.ViewCompat
@@ -19,13 +20,18 @@ import kotlinx.android.synthetic.main.item_bill_list.view.*
 import kotlinx.android.synthetic.main.item_daily_count.view.*
 
 class BillAdapter(private val list: List<Cashbook>) :
-    RecyclerView.Adapter<BillAdapter.ViewHolder>(), AnimateViewHolder {
+    RecyclerView.Adapter<BillAdapter.ViewHolder>() {
 
     var onItemClickListener: OnItemClickListener? = null
     var deleteShowingPosition = -1
     var handlerAnotherView: HandlerAnotherView? = null
+    lateinit var deleteAnimation: Animation
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    private var mParentPosition: Int? = null      //用于标识日期所在的位置
+
+    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        var parentPosition: Int? = null
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view: View = if (viewType == TYPE_BILL) {
@@ -47,6 +53,7 @@ class BillAdapter(private val list: List<Cashbook>) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         if (list[position].type == TYPE_BILL) {
+            holder.parentPosition = mParentPosition
             with(holder.itemView) {
                 tag = position
                 val bill = list[position].item as Bill
@@ -114,15 +121,33 @@ class BillAdapter(private val list: List<Cashbook>) :
 
                 iv_item_bill_delete.tag = position
                 iv_item_bill_delete.setOnClickListener {
-                    onItemClickListener!!.onItemClick(
-                        iv_item_bill_delete,
-                        iv_item_bill_delete.tag as Int
-                    )
+                    deleteShowingPosition = -1;
+                    deleteAnimation = AlphaAnimation(1f, 0f)
+                    deleteAnimation.duration = 200
+
+                    holder.itemView.startAnimation(deleteAnimation)
+                    deleteAnimation.setAnimationListener(object : Animation.AnimationListener {
+                        override fun onAnimationRepeat(animation: Animation?) {
+                        }
+
+                        override fun onAnimationEnd(animation: Animation?) {
+                            onItemClickListener!!.onItemDelete(
+                                iv_item_bill_delete,
+                                iv_item_bill_delete.tag as Int
+                            )
+                        }
+
+                        override fun onAnimationStart(animation: Animation?) {
+                        }
+
+                    })
+
                 }
             }
         } else {
             with(holder.itemView) {
                 tag = position
+                mParentPosition = position
                 val dailyBill = list[position].item as DailyBill
                 tv_item_date.text = getDateStringByInt(dailyBill.date)
                 tv_item_daily_count.text = dailyBill.dayCount.toString()
@@ -130,34 +155,8 @@ class BillAdapter(private val list: List<Cashbook>) :
         }
     }
 
+
     interface HandlerAnotherView {
         fun handleAnother(position: Int)
-    }
-
-    override fun preAnimateAddImpl(p0: RecyclerView.ViewHolder?) {
-        ViewCompat.setTranslationY(p0!!.itemView, -p0.itemView.height * 0.3f);
-        ViewCompat.setAlpha(p0.itemView, 0f);
-    }
-
-    override fun preAnimateRemoveImpl(p0: RecyclerView.ViewHolder?) {
-        ViewCompat.animate(p0!!.itemView)
-            .translationY(-p0.itemView.height * 0.3f)
-            .alpha(1f)
-            .setDuration(300)
-            .start()
-    }
-
-    override fun animateAddImpl(p0: RecyclerView.ViewHolder?, p1: ViewPropertyAnimatorListener?) {
-        ViewCompat.animate(p0!!.itemView)
-            .translationY(0f)
-            .alpha(1f)
-            .setDuration(300)
-            .start()
-    }
-
-    override fun animateRemoveImpl(
-        p0: RecyclerView.ViewHolder?,
-        p1: ViewPropertyAnimatorListener?
-    ) {
     }
 }

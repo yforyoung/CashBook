@@ -21,6 +21,7 @@ import com.yyl.cashbook.model.beans.BookingType
 import com.yyl.cashbook.utils.getDateIntByDate
 import kotlinx.android.synthetic.main.activity_booking_detail.*
 import kotlinx.android.synthetic.main.layout_cacul.*
+import org.greenrobot.eventbus.EventBus
 import java.text.DecimalFormat
 import java.util.*
 
@@ -92,7 +93,7 @@ class BookingDetailActivity : AppCompatActivity(), View.OnClickListener {
         typeAdapter = TypeAdapter(typeList)
         rv_booking_type.adapter = typeAdapter
         typeAdapter.onItemClickListener = object : OnItemClickListener {
-            override fun onItemClick(v: View, position: Int) {
+            override fun onItemDelete(v: View, position: Int) {
                 tv_booking_detail_type_name.text = typeList[position].name
             }
 
@@ -201,8 +202,9 @@ class BookingDetailActivity : AppCompatActivity(), View.OnClickListener {
             bill.moneyOut = true /*spinner_detail_type.selectedItemPosition == 0*/
             bill.date = getDateIntByDate(billData)
             bill.type = tv_booking_detail_type_name.text.toString()
-            bill.detail=et_remarks.text.toString()
+            bill.detail = et_remarks.text.toString()
             cashBookModel.addCashbook(bill)
+            EventBus.getDefault().post(bill)
             finish()
         }
     }

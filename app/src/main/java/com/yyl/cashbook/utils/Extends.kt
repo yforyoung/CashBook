@@ -12,6 +12,8 @@ import java.util.*
  */
 val Main = Dispatchers.Main
 val IO = Dispatchers.IO
+const val ADD_CASH = 1;
+const val DELETE_CASH = -1;
 
 fun getDateStringByInt(i: Int): String {
     val date = SimpleDateFormat("yyyyMMdd").parse(i.toString())

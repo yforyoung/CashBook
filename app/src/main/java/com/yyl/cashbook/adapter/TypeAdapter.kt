@@ -21,7 +21,7 @@ class TypeAdapter(private val list: List<BookingType>) :
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_booking_detail_type, parent, false)
         view.setOnClickListener {
-            onItemClickListener!!.onItemClick(view, view.tag as Int)
+            onItemClickListener!!.onItemDelete(view, view.tag as Int)
         }
 
         return ViewHolder(view)
