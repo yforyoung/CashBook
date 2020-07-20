@@ -5,6 +5,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -37,6 +39,7 @@ class BookingFragment : Fragment() {
     private val cashbookModel = CashbookModel()
     private lateinit var context: FragmentActivity
     private var page = 0
+    private lateinit var deleteAnimation: Animation
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -57,6 +60,24 @@ class BookingFragment : Fragment() {
 
         initListener()
         initData()
+        initAnim()
+    }
+
+    private fun initAnim() {
+        deleteAnimation = AlphaAnimation(1f, 0f)
+        deleteAnimation.duration = 200
+        deleteAnimation.setAnimationListener(object : Animation.AnimationListener {
+            override fun onAnimationRepeat(animation: Animation?) {
+            }
+
+            override fun onAnimationEnd(animation: Animation?) {
+                adapter.notifyDataSetChanged()
+            }
+
+            override fun onAnimationStart(animation: Animation?) {
+            }
+
+        })
     }
 
     private fun initData() {        //初始化数据
@@ -120,7 +141,8 @@ class BookingFragment : Fragment() {
         adapter.handlerAnotherView = object : BillAdapter.HandlerAnotherView {
             override fun handleAnother(position: Int) {
                 //找不到View
-                recycler_view.layoutManager?.findViewByPosition(position)?.findViewById<ImageView>(R.id.iv_item_bill)?.performClick()
+                recycler_view.layoutManager?.findViewByPosition(position)
+                    ?.findViewById<ImageView>(R.id.iv_item_bill)?.performClick()
 //                recycler_view.getChildAt(position)?.findViewById<ImageView>(R.id.iv_item_bill)?.performClick()
             }
         }
@@ -186,23 +208,27 @@ class BookingFragment : Fragment() {
                     val dailyBill = list[parentPosition].item as DailyBill
                     dailyBill.dayCount -= (list[position].item as Bill).count
                     dailyBill.dayCount = DecimalFormat("0.00").format(dailyBill.dayCount).toDouble()
+                    recycler_view.layoutManager?.findViewByPosition(position)
+                        ?.startAnimation(deleteAnimation)
                     list.removeAt(position)
                     if (dailyBill.dayCount <= 0) {
+                        recycler_view.layoutManager?.findViewByPosition(parentPosition)
+                            ?.startAnimation(deleteAnimation)
                         list.removeAt(parentPosition)
                     }
+
                 } else {
                     cashbookModel.getCashbookList(page)?.let {
                         list.addAll(it)
                         withContext(Main) {
                             tv_day_out.text = todayCount
                             tv_month_out.text = monthCount
-                            adapter.notifyItemRangeChanged(0, list.size - 1)
+                            adapter.notifyDataSetChanged()
                         }
                     }
                     page++
                 }
 
-                adapter.notifyDataSetChanged()
                 tv_day_out.text = todayCount
                 tv_month_out.text = monthCount
             }

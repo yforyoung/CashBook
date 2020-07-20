@@ -122,26 +122,11 @@ class BillAdapter(private val list: List<Cashbook>) :
                 iv_item_bill_delete.tag = position
                 iv_item_bill_delete.setOnClickListener {
                     deleteShowingPosition = -1;
-                    deleteAnimation = AlphaAnimation(1f, 0f)
-                    deleteAnimation.duration = 200
 
-                    holder.itemView.startAnimation(deleteAnimation)
-                    deleteAnimation.setAnimationListener(object : Animation.AnimationListener {
-                        override fun onAnimationRepeat(animation: Animation?) {
-                        }
-
-                        override fun onAnimationEnd(animation: Animation?) {
-                            onItemClickListener!!.onItemDelete(
-                                iv_item_bill_delete,
-                                iv_item_bill_delete.tag as Int
-                            )
-                        }
-
-                        override fun onAnimationStart(animation: Animation?) {
-                        }
-
-                    })
-
+                    onItemClickListener!!.onItemDelete(
+                        iv_item_bill_delete,
+                        iv_item_bill_delete.tag as Int
+                    )
                 }
             }
         } else {
