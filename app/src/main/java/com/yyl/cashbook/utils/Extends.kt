@@ -16,6 +16,7 @@ const val ADD_CASH = 1;
 const val DELETE_CASH = -1;
 
 fun getDateStringByInt(i: Int): String {
+    Log.i("yforyoung","$i")
     val date = SimpleDateFormat("yyyyMMdd").parse(i.toString())
     val today = Date()
     val smp: SimpleDateFormat
@@ -24,7 +25,7 @@ fun getDateStringByInt(i: Int): String {
             SimpleDateFormat("yyyy年MM月dd日")
         }
         else -> {
-            SimpleDateFormat("MM年dd日")
+            SimpleDateFormat("MM月dd日")
         }
     }
     return smp.format(date)

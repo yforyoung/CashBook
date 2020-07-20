@@ -13,5 +13,4 @@ class DailyBill : LitePalSupport() {
     @Column(unique = true)
     var date = 19900101
     var dayCount = 0.00
-
 }

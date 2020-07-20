@@ -1,13 +1,11 @@
 package com.yyl.cashbook.fragments
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,6 +18,8 @@ import com.yyl.cashbook.database.Bill
 import com.yyl.cashbook.database.DailyBill
 import com.yyl.cashbook.model.CashbookModel
 import com.yyl.cashbook.model.beans.Cashbook
+import com.yyl.cashbook.model.beans.TYPE_BILL
+import com.yyl.cashbook.model.beans.TYPE_DAILY_COUNT
 import com.yyl.cashbook.utils.*
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator
 import kotlinx.android.synthetic.main.fragment_booking.*
@@ -29,6 +29,7 @@ import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import java.text.DecimalFormat
 
 class BookingFragment : Fragment() {
     private lateinit var adapter: BillAdapter
@@ -93,10 +94,10 @@ class BookingFragment : Fragment() {
                     cashbookModel.getCashbookList(page)?.let {
                         if (it.isNotEmpty()) {
                             list.addAll(it)
+                            page++;
+                            adapter.notifyItemRangeInserted(start, list.size - 1)
                         }
                     }
-                    page++;
-                    adapter.notifyItemRangeInserted(start, list.size - 1)
                 }
             }
         })
@@ -118,20 +119,12 @@ class BookingFragment : Fragment() {
         /*显示一个删除 关闭另一个删除*/
         adapter.handlerAnotherView = object : BillAdapter.HandlerAnotherView {
             override fun handleAnother(position: Int) {
-                recycler_view.getChildAt(position)!!
-                    .findViewById<ImageView>(R.id.iv_item_bill)
-                    .performClick()
+                //找不到View
+                recycler_view.layoutManager?.findViewByPosition(position)?.findViewById<ImageView>(R.id.iv_item_bill)?.performClick()
+//                recycler_view.getChildAt(position)?.findViewById<ImageView>(R.id.iv_item_bill)?.performClick()
             }
         }
 
-    }
-
-    override fun onResume() {
-        super.onResume()
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -144,10 +137,38 @@ class BookingFragment : Fragment() {
          * 否则刷新所有数据
          * 再滑动到position
          * */
-        for (i in list) {
-
+        val position = cashbookModel.findPosition(bill, list)
+        if (position >= list.size) {     //大于了 添加全部的数据
+            GlobalScope.launch(IO) {
+                val todayCount = cashbookModel.getTodayCount()
+                val monthCount = cashbookModel.getMonthCount()
+                list.clear()
+                cashbookModel.getCashbookList()?.let {
+                    list.addAll(it)
+                    withContext(Main) {
+                        tv_day_out.text = todayCount
+                        tv_month_out.text = monthCount
+                        adapter.notifyDataSetChanged()
+                    }
+                }
+            }
+        } else {
+            if (list[position].type == TYPE_BILL) {     //日期必定相等
+                list.add(position, Cashbook(bill, TYPE_BILL))
+                val dailyBill = list[position - 1].item as DailyBill
+                dailyBill.dayCount += bill.count           //加法会有精度问题吗
+                dailyBill.dayCount = DecimalFormat("0.00").format(dailyBill.dayCount).toDouble()
+            } else if (list[position].type == TYPE_DAILY_COUNT) {   //必定是新增
+                val dailyBill = DailyBill()
+                dailyBill.date = bill.date
+                dailyBill.dayCount = bill.count
+                list.add(position, Cashbook(dailyBill, TYPE_DAILY_COUNT))
+                list.add(position + 1, Cashbook(bill, TYPE_BILL))
+            }
+            adapter.notifyDataSetChanged()
+            recycler_view.smoothScrollToPosition(position)
         }
-//        refreshCashData(ADD_CASH,)
+
     }
 
     /**
@@ -164,6 +185,7 @@ class BookingFragment : Fragment() {
                 if (action == DELETE_CASH) {
                     val dailyBill = list[parentPosition].item as DailyBill
                     dailyBill.dayCount -= (list[position].item as Bill).count
+                    dailyBill.dayCount = DecimalFormat("0.00").format(dailyBill.dayCount).toDouble()
                     list.removeAt(position)
                     if (dailyBill.dayCount <= 0) {
                         list.removeAt(parentPosition)

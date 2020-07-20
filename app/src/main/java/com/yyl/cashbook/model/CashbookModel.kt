@@ -8,9 +8,6 @@ import com.yyl.cashbook.model.beans.TYPE_DAILY_COUNT
 import com.yyl.cashbook.utils.getDateIntByDate
 import com.yyl.cashbook.utils.getTodayString
 import com.yyl.cashbook.utils.log
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.litepal.LitePal
 import org.litepal.extension.sum
 import java.text.DecimalFormat
@@ -40,14 +37,26 @@ class CashbookModel {
             .order("date desc, id desc")
             .find(Bill::class.java)
 
+        if (billList.isEmpty()) {
+            return emptyList()
+        }
         val dailyBillList = arrayListOf<DailyBill>()
-        val cursor =
-            LitePal.findBySQL("select date,sum(count) from Bill group by date order by date desc, id desc")
-        while (cursor.moveToNext()) {
-            val dailyBill = DailyBill()
-            dailyBill.dayCount = cursor.getDouble(1)
-            dailyBill.date = cursor.getInt(0)
-            dailyBillList.add(dailyBill)
+        val dailyBill = DailyBill()
+        dailyBill.dayCount = billList[0].count
+        dailyBill.date = billList[0].date
+        dailyBillList.add(dailyBill)
+
+        for (i in 1 until billList.size) {
+            if (dailyBillList[dailyBillList.size - 1].date == billList[i].date) {
+                dailyBillList[dailyBillList.size - 1].dayCount = DecimalFormat("0.00")
+                    .format(dailyBillList[dailyBillList.size - 1].dayCount + billList[i].count)
+                    .toDouble()
+            } else {
+                val db = DailyBill()
+                db.dayCount = billList[i].count
+                db.date = billList[i].date
+                dailyBillList.add(db)
+            }
         }
         return merge(billList, dailyBillList)
     }
@@ -124,30 +133,24 @@ class CashbookModel {
         return binarySearch(b.date, dateList)
     }
 
-    /*1 1 1 2 2 2 2 3 3 4 4 5 5 8 8 9 9*/
-    /*2--5*/
-    /*7--13*/
-    fun binarySearch(key: Int, list: ArrayList<Int>): Int {
-        var position = list.size / 2
-        var midData = list[position]
-        while (true) {
-            if (midData == key) {
-                //向前找 找到第一个等于key的位置
-                if (position == 0 || position == 1) {
-                    return 1
-                }
-                while (position > 1) {
-                    if (list[position - 1] < key) { //前一个值<key position就是第一个 ，因此返回position+1
-                        return position + 1
-                    } else if (list[position - 1] == key) { //前一个值=key  继续向前找
-                        position--
-                    }
-                }
-            } else if (midData > key) {
-                position /= 2
+    /*9 9 7 7 6 6*/
+    //查找左边界的二分查找  逆序
+    private fun binarySearch(key: Int, list: ArrayList<Int>): Int {
+        var left = 0
+        var right = list.size
+        while (left < right) {
+            val position = (right + left) / 2
+            val midData = list[position]
+            if (midData > key) {
+                left = position + 1
             } else {
-                position = (list.size - position) / 2
+                right = position
             }
+        }
+        if (left < list.size - 1 && list[left + 1] < key) {
+            return left     //如果不存在这个数 返回值就是需要的值
+        } else {
+            return left + 1     //如果存在  需要+1
         }
     }
 }
