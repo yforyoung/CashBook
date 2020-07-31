@@ -159,17 +159,14 @@ class BookingFragment : Fragment() {
          * 否则刷新所有数据
          * 再滑动到position
          * */
+        refreshCount()
         val position = cashbookModel.findPosition(bill, list)
         if (position >= list.size) {     //大于了 添加全部的数据
             GlobalScope.launch(IO) {
-                val todayCount = cashbookModel.getTodayCount()
-                val monthCount = cashbookModel.getMonthCount()
                 list.clear()
                 cashbookModel.getCashbookList()?.let {
                     list.addAll(it)
                     withContext(Main) {
-                        tv_day_out.text = todayCount
-                        tv_month_out.text = monthCount
                         adapter.notifyDataSetChanged()
                     }
                 }
@@ -200,38 +197,31 @@ class BookingFragment : Fragment() {
      *
      * */
     private fun refreshCashData(action: Int, position: Int, parentPosition: Int) {
-        GlobalScope.launch(IO) {
-            val todayCount = cashbookModel.getTodayCount()
-            val monthCount = cashbookModel.getMonthCount()
-            withContext(Main) {
-                if (action == DELETE_CASH) {
-                    val dailyBill = list[parentPosition].item as DailyBill
-                    dailyBill.dayCount -= (list[position].item as Bill).count
-                    dailyBill.dayCount = DecimalFormat("0.00").format(dailyBill.dayCount).toDouble()
-                    recycler_view.layoutManager?.findViewByPosition(position)
-                        ?.startAnimation(deleteAnimation)
-                    list.removeAt(position)
-                    if (dailyBill.dayCount <= 0) {
-                        recycler_view.layoutManager?.findViewByPosition(parentPosition)
-                            ?.startAnimation(deleteAnimation)
-                        list.removeAt(parentPosition)
-                    }
-
-                } else {
-                    cashbookModel.getCashbookList(page)?.let {
-                        list.addAll(it)
-                        withContext(Main) {
-                            tv_day_out.text = todayCount
-                            tv_month_out.text = monthCount
-                            adapter.notifyDataSetChanged()
-                        }
-                    }
-                    page++
-                }
-
-                tv_day_out.text = todayCount
-                tv_month_out.text = monthCount
+        if (action == DELETE_CASH) {
+            val dailyBill = list[parentPosition].item as DailyBill
+            dailyBill.dayCount -= (list[position].item as Bill).count
+            dailyBill.dayCount = DecimalFormat("0.00").format(dailyBill.dayCount).toDouble()
+            recycler_view.layoutManager?.findViewByPosition(position)
+                ?.startAnimation(deleteAnimation)
+            list.removeAt(position)
+            if (dailyBill.dayCount <= 0) {
+                recycler_view.layoutManager?.findViewByPosition(parentPosition)
+                    ?.startAnimation(deleteAnimation)
+                list.removeAt(parentPosition)
             }
+
+        } else {
+            cashbookModel.getCashbookList(page)?.let {
+                list.addAll(it)
+                adapter.notifyDataSetChanged()
+            }
+            page++
         }
+        refreshCount()
+    }
+
+    private fun refreshCount() {
+        tv_day_out.text = cashbookModel.getTodayCount()
+        tv_month_out.text = cashbookModel.getMonthCount()
     }
 }
